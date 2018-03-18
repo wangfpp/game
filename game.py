@@ -2,7 +2,7 @@
 # @Author: wangjb
 # @Date:   2018-02-23 14:44:50
 # @Last Modified by:   wangjb
-# @Last Modified time: 2018-03-18 11:02:18
+# @Last Modified time: 2018-03-18 11:06:52
 import pygame
 from pygame.locals import *
 import numpy as np
@@ -19,40 +19,6 @@ rotate = Rotate()
 class tetris(object):
 	"""docstring for tetris"""
 	def __init__(self):#obj 包含画面的宽高 物块的大小等信息
-		self.width = 500
-		self.begin = True
-		self.height = 524
-		self.blockWidth = 23
-		self.blockHeight = 22
-		self.pause = False
-		self.SCORE = 0
-		self.LINES = 0
-		self.LEVEL = 1
-		self.speed = 1
-		self.background_image = 'background.jpg'
-		self.boomImage = 'timg.gif'
-		self.list_screen = np.zeros((21,10),int)
-		self.speed = 0
-		self.TEXT = [
-			{
-				'str' : 'SCORE:  ',
-				'val' : self.SCORE,
-				'pos' : (302,155)
-			},
-			{
-				'str' : 'LINES:  ',
-				'val' : self.LINES,
-				'pos' : (302,205)
-			},
-			{
-				'str' : 'LEVEL:  ',
-				'val' : self.LEVEL,
-				'pos' : (302,255)
-			}
-		]
-		self.Current = copy.deepcopy(self.new_block())
-		self.Next = copy.deepcopy(self.new_block())
-	def restart(self):
 		self.width = 500
 		self.begin = True
 		self.height = 524
@@ -285,7 +251,7 @@ class tetris(object):
 					elif event.key == K_q:
 						self.begin = False
 					elif event.key == K_r:
-						self.restart()
+						self.__init__()
 			self.clear()
 			pygame.display.update()
 if __name__ == '__main__':
