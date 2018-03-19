@@ -2,7 +2,7 @@
 # @Author: wangjb
 # @Date:   2018-02-23 14:44:50
 # @Last Modified by:   wangjb
-# @Last Modified time: 2018-03-18 11:06:52
+# @Last Modified time: 2018-03-19 13:56:04
 import pygame
 from pygame.locals import *
 import numpy as np
@@ -62,7 +62,7 @@ class tetris(object):
 		pygame.key.set_repeat(100)
 		
 		self.screen = pygame.display.set_mode((self.width,self.height),0,32)
-		self.font = pygame.font.SysFont('arial',24)
+		self.font = pygame.font.SysFont('Arial',24)
 		self.background = pygame.image.load(self.background_image).convert()
 		self.pygame_init()
 		
@@ -97,7 +97,7 @@ class tetris(object):
 				self.TEXT[1]['val'] = self.LINES
 				self.LEVEL = (self.LINES / 20) if (self.LINES / 20 > 0) else 1
 				self.TEXT[2]['val'] = self.LEVEL
-				self.boom_effect()
+				#self.boom_effect()
 		self.draw_text()
 	def boom_effect(self):#消除行的爆炸效果💥
 		self.boom = pygame.image.load(self.boomImage).convert()
@@ -238,15 +238,16 @@ class tetris(object):
 				if event.type == QUIT:
 					exit()	
 				if event.type == KEYDOWN:
-					if event.key == K_DOWN:
-						self.move_down()
-					elif event.key == K_UP:
-						self.move_up()
-					elif event.key == K_LEFT:
-						self.move_left()
-					elif event.key == K_RIGHT:
-						self.move_right()
-					elif event.key == K_p:
+					if not self.pause:
+						if event.key == K_DOWN:
+							self.move_down()
+						elif event.key == K_UP:
+							self.move_up()
+						elif event.key == K_LEFT:
+							self.move_left()
+						elif event.key == K_RIGHT:
+							self.move_right()
+					if event.key == K_p:
 						self.pause = not self.pause
 					elif event.key == K_q:
 						self.begin = False
