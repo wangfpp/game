@@ -2,7 +2,7 @@
 # @Author: wangjb
 # @Date:   2018-02-23 14:44:50
 # @Last Modified by:   wangjb
-# @Last Modified time: 2018-03-19 13:56:04
+# @Last Modified time: 2018-03-20 14:42:55
 import pygame
 from pygame.locals import *
 import numpy as np
@@ -29,8 +29,8 @@ class tetris(object):
 		self.LINES = 0
 		self.LEVEL = 1
 		self.speed = 1
-		self.background_image = 'background.jpg'
-		self.boomImage = 'timg.gif'
+		self.background_image = './resource/img/background.jpg'
+		self.boomImage = './resource/img/timg.gif'
 		self.list_screen = np.zeros((21,10),int)
 		self.speed = 0
 		self.TEXT = [
@@ -237,6 +237,9 @@ class tetris(object):
 			for event in pygame.event.get():
 				if event.type == QUIT:
 					exit()	
+				if event.type == VIDEORESIZE:
+					SCREEN_SIZE = event.size
+					self.screen =  pygame.display.set_mode(SCREEN_SIZE, RESIZABLE)
 				if event.type == KEYDOWN:
 					if not self.pause:
 						if event.key == K_DOWN:
