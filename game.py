@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 # @Author: wangjb
 # @Date:   2018-02-23 14:44:50
-# @Last Modified by:   wangjb
-# @Last Modified time: 2018-03-20 14:42:55
+# @Last Modified by:   wangfpp
+# @Last Modified time: 2018-03-21 09:15:49
 import pygame
 from pygame.locals import *
 import numpy as np
@@ -29,8 +29,8 @@ class tetris(object):
 		self.LINES = 0
 		self.LEVEL = 1
 		self.speed = 1
-		self.background_image = './resource/img/background.jpg'
-		self.boomImage = './resource/img/timg.gif'
+		self.background_image = './img/background.jpg'
+		self.boomImage = './img/timg.gif'
 		self.list_screen = np.zeros((21,10),int)
 		self.speed = 0
 		self.TEXT = [
