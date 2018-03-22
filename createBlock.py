@@ -2,10 +2,11 @@
 # @Author: wangjb
 # @Date:   2018-02-23 16:56:24
 # @Last Modified by:   wangjb
-# @Last Modified time: 2018-03-15 15:37:12
+# @Last Modified time: 2018-03-22 11:38:17
 
 import numpy as np
 import random
+import copy
 
 t = {
 		'shape' : [[0,1,0],
@@ -62,18 +63,17 @@ color = [
 	[117,49,247],
 	[209,81,68]
 ]
-def dd(x):
-	print 1
 class createBlock(object):
 	"""docstring for createBlock"""
 	def __init__(self):
-		pass
+		self.shape = shape
+		self.color = color
 	def random_block(self):
 		num = int(random.random()*6)
-		shape[num]['color'] = color[num]
-		shape[num]['index'] = [0,4]#x y第几列第几行
-		random_shape = shape[num]
-		return random_shape
+		self.shape[num]['color'] = color[num]
+		self.shape[num]['index'] = [0,4]#x y第几列第几行
+		random_shape = self.shape[num]
+		return copy.deepcopy(random_shape)
 
 
 

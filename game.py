@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 # @Author: wangjb
 # @Date:   2018-02-23 14:44:50
-# @Last Modified by:   wangfpp
-# @Last Modified time: 2018-03-21 09:15:49
+# @Last Modified by:   wangjb
+# @Last Modified time: 2018-03-22 11:40:52
 import pygame
 from pygame.locals import *
 import numpy as np
@@ -15,7 +15,6 @@ import comb
 from createBlock import *
 from text import Rotate
 rotate = Rotate()
-
 class tetris(object):
 	"""docstring for tetris"""
 	def __init__(self):#obj 包含画面的宽高 物块的大小等信息
@@ -33,6 +32,7 @@ class tetris(object):
 		self.boomImage = './img/timg.gif'
 		self.list_screen = np.zeros((21,10),int)
 		self.speed = 0
+		self.shape  = createBlock().shape
 		self.TEXT = [
 			{
 				'str' : 'SCORE:  ',
@@ -55,8 +55,7 @@ class tetris(object):
 	def new_block(self):#产生新的物块(包含当前的Current和下一个Next)
 		new = createBlock()
 		return new.random_block()
-	def game_init(self):#游戏初始化
-		
+	def game_init(self):#游戏初始化		
 		pygame.init()		
 		pygame.display.set_caption('俄罗斯方块')
 		pygame.key.set_repeat(100)
@@ -157,22 +156,35 @@ class tetris(object):
 		x  = self.Current['index'][0]
 		y = self.Current['index'][1]
 		if self_x + x > 19 or self.check_vertiacl():
-			self.replace_value(1)
-			self.Current = copy.deepcopy(self.Next)
-			self.Next = self.new_block()
+			if self.game_over():
+				self.begin = False
+				self.screen.blit(self.background,(0,0))
+				self.screen.blit(self.font.render('Game Over',True,(255,0,0)),(10,200))
+			else:
+				self.replace_value(1)
+				self.Current = copy.deepcopy(self.Next)
+				self.Next = self.new_block()
 		else:
 			self.delete_value()
 			self.Current['index'][0] += 1
 			self.replace_value(-1)
 			self.ratio = time.time()
-		
+	def game_over(self):
+		pre_Current = self.new_block()
+		shape = pre_Current['shape']
+		x = pre_Current['index'][0]
+		y = pre_Current['index'][1]
+		for i,itema in enumerate(shape):
+			for j,itemb in enumerate(itema):
+					if self.list_screen[ i + x][ j + y] == 1:
+						return True
+		return False    							 
 	def check_vertiacl(self):#检测垂直方向上是否有碰撞发生
 		for i in range(len(self.list_screen) - 1):
 			for j in range(len(self.list_screen[i])):
 				if self.list_screen[i][j] == -1 :
 					if  self.list_screen[i+1][j] == 1:
 						return True
-						break
 		return False
 	def move_up(self):#向上箭头的旋转  其中包含边界条件
 		x  = self.Current['index'][0]
@@ -237,9 +249,6 @@ class tetris(object):
 			for event in pygame.event.get():
 				if event.type == QUIT:
 					exit()	
-				if event.type == VIDEORESIZE:
-					SCREEN_SIZE = event.size
-					self.screen =  pygame.display.set_mode(SCREEN_SIZE, RESIZABLE)
 				if event.type == KEYDOWN:
 					if not self.pause:
 						if event.key == K_DOWN:
@@ -250,6 +259,9 @@ class tetris(object):
 							self.move_left()
 						elif event.key == K_RIGHT:
 							self.move_right()
+						elif event.key == K_i:
+							self.Next['shape'] = copy.deepcopy(self.shape[5]['shape'])
+							self.draw_next()
 					if event.key == K_p:
 						self.pause = not self.pause
 					elif event.key == K_q:
