@@ -2,7 +2,7 @@
 # @Author: wangjb
 # @Date:   2018-02-23 14:44:50
 # @Last Modified by:   wangjb
-# @Last Modified time: 2018-03-22 11:40:52
+# @Last Modified time: 2018-04-20 11:37:30
 import pygame
 from pygame.locals import *
 import numpy as np
@@ -11,27 +11,28 @@ import copy
 import time
 
 #以下为自用函数
-import comb
-from createBlock import *
-from text import Rotate
+import comb#合并str
+from createBlock import *#产生方块
+from text import Rotate#旋转方块
 rotate = Rotate()
 class tetris(object):
 	"""docstring for tetris"""
-	def __init__(self):#obj 包含画面的宽高 物块的大小等信息
-		self.width = 500
+	def __init__(self):
+		self.width = 500#背景宽度
 		self.begin = True
-		self.height = 524
-		self.blockWidth = 23
+		self.height = 524#背景高度
+		self.icon = './img/tris.png'
+		self.blockWidth = 23#方块大小
 		self.blockHeight = 22
-		self.pause = False
-		self.SCORE = 0
-		self.LINES = 0
-		self.LEVEL = 1
-		self.speed = 1
-		self.background_image = './img/background.jpg'
-		self.boomImage = './img/timg.gif'
+		self.pause = False#游戏暂停
+		self.SCORE = 0#当前分数
+		self.LINES = 0#消除的行数
+		self.LEVEL = 1#当前的级数
+		self.speed = 1#下降速度
+
+		self.background_image = './img/background.jpg'#背景图
+		self.boomImage = './img/timg.gif'#消除行的时候 boom图
 		self.list_screen = np.zeros((21,10),int)
-		self.speed = 0
 		self.shape  = createBlock().shape
 		self.TEXT = [
 			{
@@ -50,8 +51,8 @@ class tetris(object):
 				'pos' : (302,255)
 			}
 		]
-		self.Current = copy.deepcopy(self.new_block())
-		self.Next = copy.deepcopy(self.new_block())
+		self.Current = copy.deepcopy(self.new_block())#当前的wukuai
+		self.Next = copy.deepcopy(self.new_block())#下一个物块
 	def new_block(self):#产生新的物块(包含当前的Current和下一个Next)
 		new = createBlock()
 		return new.random_block()
@@ -59,13 +60,15 @@ class tetris(object):
 		pygame.init()		
 		pygame.display.set_caption('俄罗斯方块')
 		pygame.key.set_repeat(100)
-		
+		icon = pygame.image.load(self.icon)
+		pygame.display.set_icon(icon)
+		info = pygame.display.Info()
 		self.screen = pygame.display.set_mode((self.width,self.height),0,32)
 		self.font = pygame.font.SysFont('Arial',24)
 		self.background = pygame.image.load(self.background_image).convert()
 		self.pygame_init()
 		
-	def replace_value(self,value):#把方块  替换到游戏区
+	def replace_value(self,value):#把方块  替换到游戏区 value -1(移动中的物块)  1(固定的物块) 
 		array = self.list_screen
 		block = self.Current
 		shape = block['shape']
@@ -74,7 +77,7 @@ class tetris(object):
 		y = index[1]
 		for i,itema in enumerate(shape):
 			for j,itemb in enumerate(itema):
-				if itemb == 1:
+				if itemb == 1:#为1 的时候替换画布上(真实坐标)的值
 					array[x + i][y + j ] = value
 	def delete_value(self):#每次的方块移动删除上一次目标区的内容
 		oldblock = copy.deepcopy(self.Current)
@@ -85,7 +88,7 @@ class tetris(object):
 			for j,itemb in enumerate(itema):
 				if self.list_screen[i + ox][j + oy] != 1:
 					self.list_screen[i + ox][j + oy] = 0
-	def clear(self):#清空填充区
+	def clear(self):#清空填充区  1.先删除后insert 2.计算消除的行数和得分
 		for i,itema in enumerate(self.list_screen):
 			if np.sum(itema == 1) >= 10:
 				self.list_screen =  np.delete(self.list_screen,i,0)
@@ -97,7 +100,7 @@ class tetris(object):
 				self.LEVEL = (self.LINES / 20) if (self.LINES / 20 > 0) else 1
 				self.TEXT[2]['val'] = self.LEVEL
 				#self.boom_effect()
-		self.draw_text()
+			self.draw_text()
 	def boom_effect(self):#消除行的爆炸效果💥
 		self.boom = pygame.image.load(self.boomImage).convert()
 		self.screen.blit(self.boom, (80,120))
@@ -131,7 +134,7 @@ class tetris(object):
 		length = len(shape)
 		for i,itema in enumerate(shape):
 			for j,itemb in enumerate(itema):
-				if itemb == 1:
+				if itemb == 1:#为了让物块在 可视区中间显示
 					if length == 1:
 						pygame.draw.rect(self.screen,color,[j*24.5+355,i*23.8+40,self.blockWidth,self.blockHeight],0)
 					elif length == 2:#xing
@@ -145,10 +148,6 @@ class tetris(object):
 	def draw_text(self):
 		for content in self.TEXT:
 			self.screen.blit(self.font.render(comb.comb_str(content['str'],content['val']),True,(88,104,132)),content['pos'])
-	def freedom_down(self):
-		self.delete_value()
-		self.Current['index'][0] += 1
-		time.sleep(1)
 	def move_down(self):#按向下箭头  控制物块下落 同时进行边缘和碰撞检测		
 		shapearr = np.array(self.Current['shape'])
 		self_x = np.where(shapearr == 1)[0][len(np.where(shapearr == 1)[0]) - 1]
@@ -169,7 +168,7 @@ class tetris(object):
 			self.Current['index'][0] += 1
 			self.replace_value(-1)
 			self.ratio = time.time()
-	def game_over(self):
+	def game_over(self):#游戏结束的检测
 		pre_Current = self.new_block()
 		shape = pre_Current['shape']
 		x = pre_Current['index'][0]
@@ -217,7 +216,7 @@ class tetris(object):
 			self.delete_value()
 			self.Current['index'][1] += 1
 			self.replace_value(-1)
-	def check_boundary(self,direct):
+	def check_boundary(self,direct):#左右移动是否发生碰撞
 		for i in range(len(self.list_screen)):
 			for j in range(len(self.list_screen[i]) - 1):
 				if self.list_screen[i][j] == -1 :
@@ -232,7 +231,7 @@ class tetris(object):
 		return True
 	def pygame_init(self):
 		#pygame.event.set_allowed([KEYDOWN])
-		self.old = time.time()
+		self.old = time.time()#控制游戏速度
 		while self.begin:
 			self.screen.blit(self.background,(0,0))
 			self.replace_value(-1)
@@ -240,7 +239,7 @@ class tetris(object):
 			self.draw_line()
 			self.draw_next()
 			self.draw_text()
-			if not self.pause:
+			if not self.pause:#p 暂停
 				if self.speed - self.old > (1 - self.LEVEL * 0.07):
 					self.move_down()
 					self.old = time.time()
